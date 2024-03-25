@@ -5,7 +5,7 @@ import { purple, green, yellow, red, geekblue, gray } from '@ant-design/colors';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime'
 import dbOrig from './db/db.json';
-//import players from './db/players.json';
+import players from './db/players.json';
 import rpList from './db/rp.json';
 const { Text } = Typography;
 
@@ -165,8 +165,11 @@ const App = () =>  {
   })
 
   // Time
-  const dt = dayjs("3/24/2024 4:20:33PM");
+  const dt = dayjs("3/25/2024 4:11AM");
   dayjs.extend(relativeTime);
+
+  // scroll width
+  const scrollWidth = 87 * Object.keys(players).length + 312 + 72
 
   const tableTitle = () => (<>
     <Flex justify="space-between" style={{padding: "0 8px"}}>
@@ -194,7 +197,7 @@ const App = () =>  {
             pageSize: 75,
             position: ['topRight', 'bottomRight']
           }}
-          scroll={{ x: 2200 }}
+          scroll={{ x: scrollWidth }}
           style={{alignSelf: "stretch"}}
         />
       </div>
