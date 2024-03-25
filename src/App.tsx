@@ -165,7 +165,7 @@ const App = () =>  {
   })
 
   // Time
-  const dt = dayjs("3/25/2024 4:11AM");
+  const dt = dayjs("2024-03-25 04:11AM", "YYYY-MM-DD HH:mm A")
   dayjs.extend(relativeTime);
 
   // scroll width
