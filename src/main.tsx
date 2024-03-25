@@ -14,10 +14,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     token: { colorPrimary: "#ee0890" },
     components: { Layout: {
       headerBg: "#141414",
-      headerHeight: "auto",
+      headerHeight: 92,
       headerPadding: "24px",
       footerBg: "#141414",
-      footerHeight: "auto",
       footerPadding: "24px"
     }}
   }}>

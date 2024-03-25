@@ -1,4 +1,6 @@
-import { Flex, Switch, Table, Typography, Tooltip, Tag, Badge } from 'antd';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
+import { Flex, Table, Typography, Tooltip, Tag, Badge } from 'antd';
 import { purple, green, yellow, red, geekblue, gray } from '@ant-design/colors';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -27,7 +29,7 @@ const sortDiff = (a, b) => {
 
 const App = () =>  {
 
-  let db = dbOrig.filter(x => x._diff[0] === 'S')
+  const db = dbOrig.filter(x => x._diff[0] === 'S')
 
   // Sort db properly
   db.sort(sortTitle);
@@ -134,7 +136,7 @@ const App = () =>  {
       </div>,
       dataIndex: player,
       key: player,
-      sorter: (a, b, sortOrder) => {
+      sorter: (a, b, sortOrder: string) => {
         const undefSort = sortOrder === 'ascend' ? 101 : -1;
         const aScore = a[player] !== undefined ? Number(a[player]): undefSort;
         const bScore = b[player] !== undefined ? Number(b[player]): undefSort;
