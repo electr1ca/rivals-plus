@@ -33,7 +33,7 @@ const getScores = async page => {
 
 const main = async () => {
 
-    const get = false;
+    const get = true;
 
     // grab each html file
     const browser = await puppeteer.launch({headless: true});

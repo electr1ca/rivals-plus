@@ -18,6 +18,7 @@
     "sezhi":    {"itl24":  356,  "groups": []},
     "sorae":    {"itl24":   48,  "groups": ["waffle"]},
     "tetaes":   {"itl24":   45,  "groups": ["waffle"]},
+    "scrypts":  {"itl24":  122,  "groups": []},
     "twored":   {"itl24": 1018,  "groups": []},
     "zydra":    {"itl24":  181,  "groups": []}
 }
