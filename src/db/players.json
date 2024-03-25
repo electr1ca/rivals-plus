@@ -1,0 +1,23 @@
+{
+    "aura":     {"itl24": 1037,  "groups": ["waffle"]},
+    "cering":   {"itl24":   44,  "groups": ["waffle"]},
+    "daikyi":   {"itl24":  208,  "groups": []},
+    "drazil":   {"itl24": 1226,  "groups": ["waffle"]},
+    "ele":      {"itl24":   17,  "groups": []},
+    "exsch":    {"itl24":   46,  "groups": []},
+    "hewho":    {"itl24":   56,  "groups": []},
+    "ky":       {"itl24":  462,  "groups": []},
+    "mallow":   {"itl24":  313,  "groups": []},
+    "mang":     {"itl24":   43,  "groups": ["waffle"]},
+    "maractus": {"itl24":  188,  "groups": []},
+    "mayflwr":  {"itl24":   35,  "groups": ["waffle"]},
+    "mirin":    {"itl24":  999,  "groups": ["waffle"]},
+    "quat":     {"itl24": 1227,  "groups": []},
+    "rakkii":   {"itl24":   47,  "groups": ["waffle"]},
+    "sage":     {"itl24":  206,  "groups": []},
+    "sezhi":    {"itl24":  356,  "groups": []},
+    "sorae":    {"itl24":   48,  "groups": ["waffle"]},
+    "tetaes":   {"itl24":   45,  "groups": ["waffle"]},
+    "twored":   {"itl24": 1018,  "groups": []},
+    "zydra":    {"itl24":  181,  "groups": []}
+}
