@@ -4,6 +4,7 @@ import { Flex, Table, Typography, Tooltip, Tag, Badge } from 'antd';
 import { purple, green, yellow, red, geekblue, gray } from '@ant-design/colors';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
 import dbOrig from './db/db.json';
 import players from './db/players.json';
 import rpList from './db/rp.json';
@@ -165,8 +166,9 @@ const App = () =>  {
   })
 
   // Time
-  const dt = dayjs("2024-03-25 04:11AM", "YYYY-MM-DD HH:mm A")
+  const dt = dayjs("2024-03-25 20:35", "YYYY-MM-DD hh:mm");
   dayjs.extend(relativeTime);
+  dayjs.extend(customParseFormat);
 
   // scroll width
   const scrollWidth = 87 * Object.keys(players).length + 312 + 72
