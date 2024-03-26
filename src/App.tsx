@@ -5,6 +5,7 @@ import { purple, green, yellow, red, geekblue, gray } from '@ant-design/colors';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
+import timezone from 'dayjs/plugin/timezone'
 import dbOrig from './db/db.json';
 import players from './db/players.json';
 import rpList from './db/rp.json';
@@ -166,9 +167,11 @@ const App = () =>  {
   })
 
   // Time
-  const dt = dayjs("2024-03-25 20:35", "YYYY-MM-DD hh:mm");
   dayjs.extend(relativeTime);
   dayjs.extend(customParseFormat);
+  dayjs.extend(timezone);
+  dayjs.tz.setDefault('America/New_York');
+  const dt = dayjs("2024-03-26 12:48", "YYYY-MM-DD hh:mm");
 
   // scroll width
   const scrollWidth = 87 * Object.keys(players).length + 312 + 72
