@@ -6,9 +6,12 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import timezone from 'dayjs/plugin/timezone'
-import dbOrig from './db/db.json';
-import players from './db/players.json';
-import rpList from './db/rp.json';
+const __dbOrig = await fetch('https://mayf.pink/itl/data');
+const __players = await fetch('https://mayf.pink/itl/players');
+const __rpList = await fetch('https://mayf.pink/itl/rp');
+const dbOrig = await __dbOrig.json();
+const players = await __players.json();
+const rpList = await __rpList.json();
 const { Text } = Typography;
 
 // Sort via title
