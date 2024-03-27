@@ -1,10 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as fs from 'fs';
-import HTMLTableToJson from 'html-table-to-json';
-import puppeteer from 'puppeteer';
-import * as cheerio from 'cheerio';
 import { request } from 'undici'
 let start = performance.now();
-
 
 const list = JSON.parse(fs.readFileSync('../src/db/players.json'));
 

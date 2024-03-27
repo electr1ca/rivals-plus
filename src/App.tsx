@@ -3,15 +3,16 @@
 import { Flex, Table, Typography, Tooltip, Tag, Badge } from 'antd';
 import { purple, green, yellow, red, geekblue, gray } from '@ant-design/colors';
 import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime'
-import customParseFormat from 'dayjs/plugin/customParseFormat'
-import timezone from 'dayjs/plugin/timezone'
+import relativeTime from 'dayjs/plugin/relativeTime';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 const __dbOrig = await fetch('https://mayf.pink/itl/data');
 const __players = await fetch('https://mayf.pink/itl/players');
 const __rpList = await fetch('https://mayf.pink/itl/rp');
+const __lastUpdate = await fetch('https://mayf.pink/itl/last-update');
 const dbOrig = await __dbOrig.json();
 const players = await __players.json();
 const rpList = await __rpList.json();
+const lastUpdate = await __lastUpdate.json();
 const { Text } = Typography;
 
 // Sort via title
@@ -162,6 +163,7 @@ const App = () =>  {
         } else if (obj["_top3"]["3"].includes(player)) {
           Medal = <Badge color="#8d4924"/>
         }
+        text = text !== undefined ? Number(text).toFixed(2) : '';
         return <>
           <span>{text}</span> {Medal}
         </>
@@ -172,9 +174,7 @@ const App = () =>  {
   // Time
   dayjs.extend(relativeTime);
   dayjs.extend(customParseFormat);
-  dayjs.extend(timezone);
-  dayjs.tz.setDefault('America/New_York');
-  const dt = dayjs("2024-03-26 12:48", "YYYY-MM-DD hh:mm");
+  const dt = dayjs.unix(lastUpdate);
 
   // scroll width
   const scrollWidth = 87 * Object.keys(players).length + 312 + 72
