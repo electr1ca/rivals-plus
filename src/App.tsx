@@ -33,8 +33,12 @@ const sortDiff = (a, b) => {
   return Number(a._diff.match(/\d+/)[0]) - Number(b._diff.match(/\d+/)[0])
 }
 
-const App = () =>  {
+// Check if not 0/null/undefined
+const chkNull = (val) => {
+  return val !== undefined && val !== null && val !== 0
+}
 
+const App = () =>  {
   const db = dbOrig.filter(x => x._diff[0] === 'S')
 
   // Sort db properly
@@ -47,8 +51,8 @@ const App = () =>  {
   for (const i in db) {
     const song = db[i];
     const top3 = Object.keys(song).filter(key => !key.includes('_')).sort((a, b) => {
-      const aScore = song[a] !== undefined ? Number(song[a]): -1;
-      const bScore = song[b] !== undefined ? Number(song[b]): -1;
+      const aScore = chkNull(song[a]) ? Number(song[a]): -1;
+      const bScore = chkNull(song[b]) ? Number(song[b]): -1;
       if (aScore > bScore) {
         return -1;
       } else if (aScore < bScore) {
@@ -62,7 +66,7 @@ const App = () =>  {
     let curScore = 101;
     let curPlace = 0;
     for (const entry of top3) {
-      if (isNaN(entry[1])) {
+      if (isNaN(entry[1]) || !chkNull(entry[1])) {
         break;
       } else if (entry[1] < curScore) {
         curPlace++;
@@ -144,8 +148,8 @@ const App = () =>  {
       key: player,
       sorter: (a, b, sortOrder: string) => {
         const undefSort = sortOrder === 'ascend' ? 101 : -1;
-        const aScore = a[player] !== undefined ? Number(a[player]): undefSort;
-        const bScore = b[player] !== undefined ? Number(b[player]): undefSort;
+        const aScore = chkNull(a[player]) ? Number(a[player]): undefSort;
+        const bScore = chkNull(b[player]) ? Number(b[player]): undefSort;
         if (aScore < bScore) {
           return -1;
         } else if (aScore > bScore) {
@@ -163,7 +167,7 @@ const App = () =>  {
         } else if (obj["_top3"]["3"].includes(player)) {
           Medal = <Badge color="#8d4924"/>
         }
-        text = text !== undefined ? Number(text).toFixed(2) : '';
+        text = chkNull(text) ? Number(text).toFixed(2) : '';
         return <>
           <span>{text}</span> {Medal}
         </>
@@ -202,7 +206,7 @@ const App = () =>  {
             size: "small",
             showLessItems: true,
             showSizeChanger: false,
-            pageSize: 75,
+            pageSize: 50,
             position: ['topRight', 'bottomRight']
           }}
           scroll={{ x: scrollWidth }}
