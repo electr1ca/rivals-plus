@@ -6,6 +6,7 @@
     "ele":      {"itl24":   17,  "groups": []},
     "exsch":    {"itl24":   46,  "groups": []},
     "hewho":    {"itl24":   56,  "groups": []},
+    "iskierka": {"itl24":  937,  "groups": []},
     "ky":       {"itl24":  462,  "groups": []},
     "mallow":   {"itl24":  313,  "groups": []},
     "mang":     {"itl24":   43,  "groups": ["waffle"]},
