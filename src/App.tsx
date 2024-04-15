@@ -1,10 +1,13 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-import { Flex, Table, Typography, Tooltip, Tag, Badge } from 'antd';
-import { purple, green, yellow, red, geekblue, gray } from '@ant-design/colors';
+import { Flex, Input, Typography, Tooltip, Tag, Badge, Pagination } from 'antd';
+import { purple, green, yellow, red, geekblue } from '@ant-design/colors';
+import Table from './Table';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
+import { useMemo, useState } from 'react';
+import { useDebounce } from 'use-debounce';
 const __dbOrig = await fetch('https://mayf.pink/itl/data');
 const __players = await fetch('https://mayf.pink/itl/players');
 const __rpList = await fetch('https://mayf.pink/itl/rp');
@@ -14,6 +17,9 @@ const players = await __players.json();
 const rpList = await __rpList.json();
 const lastUpdate = await __lastUpdate.json();
 const { Text } = Typography;
+
+dayjs.extend(relativeTime);
+dayjs.extend(customParseFormat);
 
 // Sort via title
 const sortTitle = (a, b) => {
@@ -38,88 +44,82 @@ const chkNull = (val) => {
   return val !== undefined && val !== null && val !== 0
 }
 
-const App = () =>  {
-  const db = dbOrig.filter(x => x._diff[0] === 'S')
+// Sort db properly
+const db = dbOrig.filter(x => x._diff[0] === 'S')
+db.sort(sortTitle);
+db.sort(sortDiff);
 
-  // Sort db properly
-  db.sort(sortTitle);
-  db.sort(sortDiff);
-
-  // Medal count calculations
-
-  // Check leading players
-  for (const i in db) {
-    const song = db[i];
-    const top3 = Object.keys(song).filter(key => !key.includes('_')).sort((a, b) => {
-      const aScore = chkNull(song[a]) ? Number(song[a]): -1;
-      const bScore = chkNull(song[b]) ? Number(song[b]): -1;
-      if (aScore > bScore) {
-        return -1;
-      } else if (aScore < bScore) {
-        return 1;
-      } else {
-        return 0;
-      }
-      }).map(player => [player, song[player]]);
-    // Parse leading players
-    db[i]['_top3'] = {1: [], 2: [], 3: []};
-    let curScore = 101;
-    let curPlace = 0;
-    for (const entry of top3) {
-      if (isNaN(entry[1]) || !chkNull(entry[1])) {
-        break;
-      } else if (entry[1] < curScore) {
-        curPlace++;
-        curScore = entry[1];
-      } if (curPlace === 4) {
-        break;
-      }
-      db[i]['_top3'][curPlace].push(entry[0]);
+// Check leading players
+for (const i in db) {
+  const song = db[i];
+  const top3 = Object.keys(song).filter(key => !key.includes('_')).sort((a, b) => {
+    const aScore = chkNull(song[a]) ? Number(song[a]): -1;
+    const bScore = chkNull(song[b]) ? Number(song[b]): -1;
+    if (aScore > bScore) {
+      return -1;
+    } else if (aScore < bScore) {
+      return 1;
+    } else {
+      return 0;
     }
+    }).map(player => [player, song[player]]);
+  // Parse leading players
+  db[i]['_top3'] = {1: [], 2: [], 3: []};
+  let curScore = 101;
+  let curPlace = 0;
+  for (const entry of top3) {
+    if (isNaN(entry[1]) || !chkNull(entry[1])) {
+      break;
+    } else if (entry[1] < curScore) {
+      curPlace++;
+      curScore = entry[1];
+    } if (curPlace === 4) {
+      break;
+    }
+    db[i]['_top3'][curPlace].push(entry[0]);
   }
+}
 
-  // Set columns
-  const columns = [
-    {
-      title: 'Title',
-      dataIndex: '_title',
-      key: 'title',
-      rowScope: 'row',
-      fixed: 'left',
-      sorter: sortTitle,
-      width: '312px',
-      render: (text: string, obj) => <>
-        <a href={`https://itl2024.groovestats.com/chart/${obj._id}`} target="_blank" rel="noopener">{text} {obj._noCmod ? <Tooltip title="No CMOD">🚫</Tooltip> : ''}</a> {obj._subtitle ? <Text type="secondary">{obj._subtitle}</Text> : ''}
-      </>,
+// Sort players by RP
+const sortedPlayers = Object.keys(rpList);
+sortedPlayers.sort((a: string, b: string) => Number(rpList[b][0]) - Number(rpList[a][0]));
+
+// Set columns
+const columns = [
+  {
+    title: 'Title',
+    dataIndex: '_title',
+    key: 'title',
+    rowScope: 'row',
+    fixed: 'left',
+    sorter: sortTitle,
+    width: '312px',
+    render: (text: string, obj) => <>
+      <a href={`https://itl2024.groovestats.com/chart/${obj._id}`} target="_blank" rel="noopener">{text} {obj._noCmod ? <Tooltip title="No CMOD">🚫</Tooltip> : ''}</a> {obj._subtitle ? <Text type="secondary">{obj._subtitle}</Text> : ''}
+    </>,
+  },
+  {
+    title: 'Diff.',
+    dataIndex: '_diff',
+    key: 'diff',
+    rowScope: 'row',
+    fixed: 'left',
+    width: '72px',
+    sorter: sortDiff,
+    render: (text: string) => {
+      let bgColor;
+      let txtColor;
+      switch (text[1]) {
+        case 'N':    bgColor = purple;    txtColor = '#fff';   break;
+        case 'E':    bgColor = green;     txtColor = '#000';   break;
+        case 'M':    bgColor = yellow;    txtColor = '#000';   break;
+        case 'H':    bgColor = red;       txtColor = '#000';   break;
+        case 'X':    bgColor = geekblue;  txtColor = '#fff';   break;
+      } 
+      return <span style={{backgroundColor: `${bgColor[4]}`, color: `${txtColor}`, display: 'inline-block', minWidth: '36px', textAlign: 'center', padding: '1px 4px', borderRadius: '8px'}}>{text}</span>
     },
-    {
-      title: 'Diff.',
-      dataIndex: '_diff',
-      key: 'diff',
-      rowScope: 'row',
-      fixed: 'left',
-      width: '72px',
-      sorter: sortDiff,
-      render: (text: string) => {
-        let bgColor;
-        let txtColor;
-        switch (text[1]) {
-          case 'N':    bgColor = purple;    txtColor = '#fff';   break;
-          case 'E':    bgColor = green;     txtColor = '#000';   break;
-          case 'M':    bgColor = yellow;    txtColor = '#000';   break;
-          case 'H':    bgColor = red;       txtColor = '#000';   break;
-          case 'X':    bgColor = geekblue;  txtColor = '#fff';   break;
-        } 
-        return <span style={{backgroundColor: `${bgColor[4]}`, color: `${txtColor}`, display: 'inline-block', minWidth: '36px', textAlign: 'center', padding: '1px 4px', borderRadius: '8px'}}>{text}</span>
-      },
-    },
-  ]
-
-  // Sort players by RP
-  const sortedPlayers = Object.keys(rpList);
-  sortedPlayers.sort((a: string, b: string) => Number(rpList[b][0]) - Number(rpList[a][0]));
-
-  sortedPlayers.forEach(player => {
+  },
+  ...sortedPlayers.map((player) => {
     // Get medal count for each player
     const medals1 = Object.keys(db).map((key: string) => db[key]["_top3"]["1"].includes(player) ? 1 : 0).reduce((a, v) => a + v, 0)
     const medals2 = Object.keys(db).map((key: string) => db[key]["_top3"]["2"].includes(player) ? 1 : 0).reduce((a, v) => a + v, 0)
@@ -134,7 +134,7 @@ const App = () =>  {
       borderRadius: "2px",
       marginInlineEnd: "4px"
     }}
-    columns.push({
+    return {
       title: <div style={{userSelect: "none"}}>
         {player}
         <Text style={{display: "block", fontWeight: "normal", fontSize: "0.75em", marginTop: "-4px"}} italic type="secondary">{rpList[player][0]} RP</Text>
@@ -172,45 +172,48 @@ const App = () =>  {
           <span>{text}</span> {Medal}
         </>
       },
-    })
+    }
   })
+]
 
-  // Time
-  dayjs.extend(relativeTime);
-  dayjs.extend(customParseFormat);
-  const dt = dayjs.unix(lastUpdate);
+const App = () =>  {
+  const [page, setPage] = useState(1);
+  const [rawSearchQuery, setRawSearchQuery] = useState("");
 
-  // scroll width
-  const scrollWidth = 87 * Object.keys(players).length + 312 + 72
+  // debounce search text input and use it to filter data
+  const [searchQuery] = useDebounce(rawSearchQuery, 500);
+  const filteredData = useMemo(() => db.filter((song) => song._title.toLowerCase().includes(searchQuery.toLowerCase())), [searchQuery]);
 
-  const tableTitle = () => (<>
-    <Flex justify="space-between" style={{padding: "0 8px"}}>
-    <Text strong>Last updated <Tooltip title={dt.format('dddd, MMMM D, YYYY h:mm A')}>
-        <Tag bordered={false} color={gray[6]} style={{cursor: "default"}}>{dt.fromNow()}</Tag>
-      </Tooltip></Text>
-      <Text>Please tag <b style={{color: purple[3]}}>@cering</b> in the <a className="external" style={{fontWeight: 'bold'}} href="https://discord.com/channels/227650173256466432/958098084276092948" target="_blank" rel="noopener">ITG Events thread</a> to be added to the sheet or to suggest changes!</Text>
-    </Flex>
-  </>);
   //<Switch checkedChildren="Singles" unCheckedChildren="Doubles" defaultChecked/>
   return (
     <Flex gap="middle" align="center" vertical>
       <div className="table-wrapper">
+        <Flex justify="space-between" align="center" style={{margin: "16px 0"}}>
+          <Input
+            onChange={(e) => setRawSearchQuery(e.target.value)}
+            placeholder="Filter songs by title..."
+            style={{ marginRight: "16px", maxWidth: "312px" }}
+            value={rawSearchQuery}
+          />
+          <Pagination
+            current={page}
+            onChange={(ind) => setPage(ind)}
+            size="small"
+            showLessItems
+            showSizeChanger={false}
+            style={{display: 'flex'}}
+            pageSize={50}
+            total={db.length}
+          />
+        </Flex>
         <Table
-          title={tableTitle}
-          dataSource={db}
           columns={columns}
-          onChange={() => {}}
-          size="small"
-          align="stretch"
-          pagination={{
-            size: "small",
-            showLessItems: true,
-            showSizeChanger: false,
-            pageSize: 50,
-            position: ['topRight', 'bottomRight']
-          }}
-          scroll={{ x: scrollWidth }}
-          style={{alignSelf: "stretch"}}
+          data={filteredData}
+          players={players}
+          lastUpdate={lastUpdate}
+          page={page}
+          setPage={setPage}
+          query={searchQuery}
         />
       </div>
     </Flex>
